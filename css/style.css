@@ -1,0 +1,15 @@
+body {
+  font: 13px/20px 'Lucida Grande', Tahoma, Verdana, sans-serif;
+  color: #404040;
+  background: #335380;
+  color: white;
+}
+.about p{
+  text-align: center;
+  font-size: 8pt;
+}
+.about p a{
+  color: #cce7fa;
+  text-decoration: none;
+}
+
