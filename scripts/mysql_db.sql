@@ -230,6 +230,10 @@ INSERT INTO `users_groups` (`id`, `user_id`, `group_id`) VALUES
      (1,1,1),
      (2,1,2);
 
+INSERT INTO `stations` (`idStation`, `city`, `location`, `lon`, `lat`, `wmo`) VALUES 
+     ('0', 'Test_city', 'Test_location', '-99', '99', '99999'),
+     ('1', 'Tucuman', 'Tucuman Aerodrome', '-65.1049', '-26.8409', '87121');
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
