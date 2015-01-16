@@ -2,8 +2,7 @@
 
 class Clima extends CI_Controller {
 
-	public function __construct()
-	{
+	public function __construct(){
 		parent::__construct();
 
 		$this->load->database();
@@ -18,6 +17,42 @@ class Clima extends CI_Controller {
 		}
 		else{
 			$this->estaciones();
+		}
+	}
+
+	function recuperar_clave(){
+		//validate form input
+		$this->form_validation->set_rules('email', 'Correo electrónico', 'valid_email|required');
+		$this->form_validation->set_rules('captcha', 'Código de verificación', 'required');
+		if ($this->form_validation->run()){
+			// First, delete old captchas
+			$expiration = time()-7200; // Two hour limit
+			$this->db->query("DELETE FROM captcha WHERE captcha_time < ".$expiration);
+			// Then see if a captcha exists:
+			$binds = array($this->input->post('captcha'), $this->input->ip_address(), $expiration);
+			$row = $this->db->query("SELECT COUNT(*) AS count FROM captcha WHERE word = ? AND ip_address = ? AND captcha_time > ?", $binds)->row();
+			if ($row->count > 0){
+			    redirect('clima/login', 'refresh');
+			}
+		}
+		else{
+			$this->load->helper('captcha');
+			$cap = create_captcha(array(
+			    'img_path' => './assets/captcha/',
+			    'img_url' => site_url('assets/captcha').'/', //    'font_path' => './path/to/fonts/texb.ttf',
+			    'img_width' => '150',
+			    'img_height' => 30,
+			    'expiration' => 7200
+			));
+			$query = $this->db->insert_string('captcha', array(
+			    'captcha_time' => $cap['time'],
+			    'ip_address' => $this->input->ip_address(),
+			    'word' => $cap['word']
+			));
+			$this->db->query($query);
+			$this->load->view('recuperar_clave.php', array(
+				'captcha' => $cap,
+			));
 		}
 	}
 
@@ -198,8 +233,16 @@ class Clima extends CI_Controller {
 		$crud->set_subject('Usuario');
 		$crud->set_relation_n_n('groups', 'users_groups', 'groups', 'user_id', 'group_id', 'name');
 		$crud->unset_fields('password','pass','pass2','salt','activation_code', 'forgotten_password_code', 'forgotten_password_time', 'remember_code', 'first_name','last_name','company','phone');
-		$crud->add_fields('username','email','password','groups');
-		$crud->edit_fields('username','email','pass','pass2','groups','active');
+		$crud->add_fields('username','email','password');
+		$crud->edit_fields('username','email','pass','pass2','active');
+		if ($this->ion_auth->is_admin()){
+			$crud->add_fields('username','email','password','groups');
+			$crud->edit_fields('username','email','pass','pass2','groups','active');
+		}
+		else{
+			$crud->add_fields('username','email','password');
+			$crud->edit_fields('username','email','pass','pass2','active');
+		}
 		$crud->field_type('pass', 'password');
 		$crud->field_type('pass2', 'password');
 		$crud->field_type('password', 'password');
@@ -229,12 +272,7 @@ class Clima extends CI_Controller {
 	}
 
 	public function _callback_date($value, $row){
-		if ((int)$value != 0){
-			return date("Y-m-d H:i:s", $value);
-		}
-		else{
-			return '-';
-		}
+		return ((int)$value != 0)?date("Y-m-d H:i:s", (int)$value):'-';
 	}
 
 	public function _delete_user($primary_key){
@@ -250,11 +288,7 @@ class Clima extends CI_Controller {
 		else{
 			$groups = array('1');
 		}
-		if (!$this->ion_auth_model->register($post['username'], $post['password'], $post['email'], array(), $groups)){
-			$this->set_error('account_creation_unsuccessful');
-			return FALSE;
-		}
-		return TRUE;
+		return $this->ion_auth_model->register($post['username'], $post['password'], $post['email'], array(), $groups);
 	}
 
 	public function _update_user($post, $primary_key) {
@@ -287,17 +321,7 @@ class Clima extends CI_Controller {
 			}
 		}
 		//check to see if we are updating the user
-	   	if($this->ion_auth->update($primary_key, $data)){
-	    		//redirect them back to the admin page if admin, or to the base url if non admin
-		    	$this->session->set_flashdata('message', $this->ion_auth->messages() );
-			return TRUE;
-		}
-		else{
-	    		//redirect them back to the admin page if admin, or to the base url if non admin
-		    	$this->session->set_flashdata('message', $this->ion_auth->errors() );
-			return FALSE;
-		}
-		return FALSE;
+	   	return $this->ion_auth->update($primary_key, $data);
 	}
 
 }
