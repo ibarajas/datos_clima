@@ -48,10 +48,10 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'mysql.5jelly.com';
-$db['default']['username'] = 'u690801609_clima';
-$db['default']['password'] = 'u690801609_clima';
-$db['default']['database'] = 'u690801609_clima';
+$db['default']['hostname'] = 'mysql3.000webhost.com';
+$db['default']['username'] = 'a4332780_clima';
+$db['default']['password'] = 'a4332780';
+$db['default']['database'] = 'a4332780_clima';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
