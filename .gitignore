@@ -1,1 +1,4 @@
 .htaccess
+index.php
+assets/captcha
+info.txt

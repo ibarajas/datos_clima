@@ -8,7 +8,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `captcha` (
   `captcha_id` BIGINT(13) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `captcha_time` INT(10) UNSIGNED NOT NULL,
+  `captcha_time` VARCHAR(20) NOT NULL,
   `ip_address` VARCHAR(16) NOT NULL DEFAULT '0',
   `word` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`captcha_id`),

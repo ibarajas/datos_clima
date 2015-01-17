@@ -7,6 +7,7 @@ class Clima extends CI_Controller {
 
 		$this->load->database();
 		$this->load->helper('url');
+		$this->load->helper('language');
 		$this->load->library('grocery_CRUD');
 		$this->load->library('ion_auth');
 	}
@@ -20,72 +21,75 @@ class Clima extends CI_Controller {
 		}
 	}
 
-	function recuperar_clave(){
-		//validate form input
+	public function recuperar_clave(){
+		$message = $this->session->flashdata('message');
 		$this->form_validation->set_rules('email', 'Correo electrónico', 'valid_email|required');
-		$this->form_validation->set_rules('captcha', 'Código de verificación', 'required');
+		$this->form_validation->set_rules('captcha', 'Código de verificación', 'callback_captcha_check');
 		if ($this->form_validation->run()){
-			// First, delete old captchas
-			$expiration = time()-7200; // Two hour limit
-			$this->db->query("DELETE FROM captcha WHERE captcha_time < ".$expiration);
-			// Then see if a captcha exists:
-			$binds = array($this->input->post('captcha'), $this->input->ip_address(), $expiration);
-			$row = $this->db->query("SELECT COUNT(*) AS count FROM captcha WHERE word = ? AND ip_address = ? AND captcha_time > ?", $binds)->row();
-			if ($row->count > 0){
-			    redirect('clima/login', 'refresh');
-			}
+			if ($this->_valid_csrf_nonce()){
+				if ($this->ion_auth->email_check($this->input->post('email'))){
+					if ($this->ion_auth->forgotten_password($this->input->post('email'))){
+						$this->session->set_flashdata('message', $this->ion_auth->messages());
+						redirect('clima/login', 'refresh');
+					}
+					else{ $message = $this->ion_auth->errors(); }
+				} else{	$message = 'La dirección de email no está registrada.'; }
+			} else{	$message = $this->lang->line('error_csrf'); }
 		}
-		else{
-			$this->load->helper('captcha');
-			$cap = create_captcha(array(
-			    'img_path' => './assets/captcha/',
-			    'img_url' => site_url('assets/captcha').'/', //    'font_path' => './path/to/fonts/texb.ttf',
-			    'img_width' => '150',
-			    'img_height' => 30,
-			    'expiration' => 7200
-			));
-			$query = $this->db->insert_string('captcha', array(
-			    'captcha_time' => $cap['time'],
-			    'ip_address' => $this->input->ip_address(),
-			    'word' => $cap['word']
-			));
-			$this->db->query($query);
-			$this->load->view('recuperar_clave.php', array(
-				'captcha' => $cap,
-			));
-		}
+		$this->load->view('recuperar_clave.php', array(
+			'captcha' => $this->_captcha(),
+			'csrf' => $this->_get_csrf_nonce(),
+			'message' => (validation_errors()) ? validation_errors() : $message,
+		));
 	}
 
-	function login(){
-		//validate form input
+	public function cambiar_clave($code = NULL){
+		if (!$code){ show_404(); }
+		$user = $this->ion_auth->forgotten_password_check($code);
+		if (!$user) {
+			$this->session->set_flashdata('message', $this->ion_auth->errors());
+			redirect("clima/recuperar_clave", 'refresh');
+		}
+
+		$message = $this->session->flashdata('message');
+		$this->form_validation->set_rules('pass', $this->lang->line('edit_user_validation_password_label'), 'required|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']');
+		$this->form_validation->set_rules('pass2', $this->lang->line('edit_user_validation_password_label'), 'required|matches[pass]');
+		if ($this->form_validation->run()){
+			if ($this->_valid_csrf_nonce() && $user->id == $this->input->post('user_id')){
+				$identity = $user->{$this->config->item('identity', 'ion_auth')};
+				if ($this->ion_auth->reset_password($identity, $this->input->post('pass'))){
+					$this->session->set_flashdata('message', $this->ion_auth->messages());
+					redirect('clima/login', 'refresh');
+				} else { $message = $this->ion_auth->errors(); }
+			} else { $message = $this->lang->line('error_csrf'); }
+		}
+		$this->load->view('cambiar_clave.php', array(
+			'user_id' => $user->id,
+			'code' => $code,
+			'csrf' => $this->_get_csrf_nonce(),
+			'message' => (validation_errors()) ? validation_errors() : $message,
+		));
+	}
+
+	public function login(){
+		$message = $this->session->flashdata('message');
 		$this->form_validation->set_rules('identity', 'Identity', 'required');
 		$this->form_validation->set_rules('password', 'Password', 'required');
 		if ($this->form_validation->run()){
-			//check to see if the user is logging in
 			$remember = (bool) $this->input->post('remember');
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
-				//if the login is successful, redirect them back to the home page
 				$this->session->set_flashdata('message', $this->ion_auth->messages());
 				redirect('clima', 'refresh');
 			}
-			else{
-				//if the login was un-successful, redirect them back to the login page
-				$this->session->set_flashdata('message', $this->ion_auth->errors());
-				redirect('clima/login', 'refresh');
-			}
+			else { $message = $this->ion_auth->errors(); }
 		}
-		else{
-			//the user is not logging in so display the login page
-			$data = array(
-				'message' => (validation_errors()) ? validation_errors() : $this->session->flashdata('message'),
-				'identity' => $this->form_validation->set_value('identity')
-			);
-			$this->load->view('login.php', $data);
-		}
+		$this->load->view('login.php', array(
+			'message' => (validation_errors()) ? validation_errors() : $message,
+		));
 	}
 
-	function logout(){
-		$logout = $this->ion_auth->logout();
+	public function logout(){
+		$this->ion_auth->logout();
 		$this->session->set_flashdata('message', $this->ion_auth->messages());
 		redirect('clima/login', 'refresh');
 	}
@@ -322,6 +326,66 @@ class Clima extends CI_Controller {
 		}
 		//check to see if we are updating the user
 	   	return $this->ion_auth->update($primary_key, $data);
+	}
+
+	function _get_csrf_nonce(){
+		$this->load->helper('string');
+		$key = random_string('alnum', 8);
+		$value = random_string('alnum', 20);
+		$this->session->set_flashdata('csrfkey', $key);
+		$this->session->set_flashdata('csrfvalue', $value);
+		return array($key => $value);
+	}
+
+	function _valid_csrf_nonce(){
+		return ($this->input->post($this->session->flashdata('csrfkey')) && 
+			$this->input->post($this->session->flashdata('csrfkey')) == $this->session->flashdata('csrfvalue'));
+	}
+
+	function _captcha(){
+		$expiration = $this->config->item('captcha_expiration');
+		$path = $this->config->item('captcha_patch');
+		// First, delete old captchas
+		list($usec, $sec) = explode(" ", microtime());
+		$time = ((float)$usec + (float)$sec) - $expiration;
+		$result = $this->db->query("SELECT captcha_time FROM captcha WHERE captcha_time < ".$time)->result_array(); 
+		foreach ($result as $r){
+			try{ unlink('./'.$path.$r['captcha_time'].'.jpg'); }
+			catch(Exception $e){ }
+		}
+		$this->db->query("DELETE FROM captcha WHERE captcha_time < ".$time);
+		$this->load->helper('captcha');
+		$cap = create_captcha(array(
+		    'img_path' => './'.$path,
+		    'img_url' => site_url($path).'/', 
+		    'img_width' => '150',
+		    'img_height' => 30,
+		    'expiration' => $expiration,
+		    //'font_path' => './fonts/texb.ttf',
+		));
+		$query = $this->db->insert_string('captcha', array(
+		    'captcha_time' => $cap['time'],
+		    'ip_address' => $this->input->ip_address(),
+		    'word' => $cap['word']
+		));
+		$this->db->query($query);
+		return $cap['image'];
+	}
+
+	function captcha_check($str){
+		if (!$str){
+			$this->form_validation->set_message('captcha_check', 'De ingresar el código de verificación.');
+			return FALSE;
+		}
+		list($usec, $sec) = explode(" ", microtime());
+		$time = ((float)$usec + (float)$sec) - $this->config->item('captcha_expiration');
+		$result = $this->db->query("SELECT COUNT(*) AS count FROM captcha WHERE word = ? AND ip_address = ? AND captcha_time > ?", 
+			array($this->input->post('captcha'), $this->input->ip_address(), $time));
+		if ($result->row()->count == 0){
+			$this->form_validation->set_message('captcha_check', 'El código de verificación es incorrecto.');
+			return FALSE;
+		}
+		return TRUE;
 	}
 
 }

@@ -6,9 +6,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-.container {
+.container-login {
   margin: 80px auto;
-  width: 640px;
 }
 .login {
   color: #555;
@@ -72,11 +71,11 @@
 .login-help a:hover {
   text-decoration: underline;
 }
-input {
+.login input {
   font-family: 'Lucida Grande', Tahoma, Verdana, sans-serif;
   font-size: 14px;
 }
-.login input[type=text], .login input[type=password] {
+.login input[type=text], .login input[type=email], .login input[type=password] {
   margin: 5px;
   padding: 0 10px;
   width: 278px;
@@ -88,7 +87,7 @@ input {
   outline: 5px solid #eff4f7;
   -moz-outline-radius: 3px;
 }
-.login input[type=text]:focus, .login input[type=password]:focus {
+.login input[type=text]:focus, .login input[type=email]:focus, .login input[type=password]:focus {
   border-color: #7dc9e2;
   outline-color: #dceefc;
   outline-offset: 0;
@@ -110,7 +109,9 @@ input {
   background: #cde5ef;
   border-color: #9eb9c2 #b3c0c8 #b4ccce;
 }
-.lt-ie9 input[type=text], .lt-ie9 input[type=password] { 
+.lt-ie9 .login input[type=text], .lt-ie9 .login input[type=email], .lt-ie9 input[type=password] { 
   line-height: 34px;
 }
-
+.login .captcha{
+  height: 30px;
+}

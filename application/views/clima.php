@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="<?php echo site_url('images/favicon.ico')?>" />
 	<link rel="stylesheet" href="<?php echo site_url('css/style.css')?>">
 	<link type="text/css" rel="stylesheet" href="<?php echo site_url('css/menu.css'); ?>" />
 <?php foreach($css_files as $file): ?>
@@ -30,14 +31,14 @@
 	<ul id="menu_wrap" class="S_Blue">
 		<li class="button"><a href="<?php echo site_url('clima')?>">DATOS DE CLIMA</a></li>
 		<li class="button"><a href="<?php echo site_url('clima/estaciones')?>">Estaciones</a></li>
-		<li class="button"><a href="<?php echo site_url('clima/muestras')?>">Muestras históricas</a></li>
-		<li class="button"><a href="<?php echo site_url('clima/resumenes_diarios')?>">Resumenes históricos</a></li>
-		<li class="button"><a href="<?php echo site_url('clima/capturas')?>">Captura de pronósticos</a></li>
-		<li class="button"><a href="<?php echo site_url('clima/pronosticos')?>">Muestras Pronósticos </a></li>
+		<li class="button"><a href="<?php echo site_url('clima/muestras')?>">Muestras</a></li>
+		<li class="button"><a href="<?php echo site_url('clima/resumenes_diarios')?>">Resumenes</a></li>
+		<li class="button"><a href="<?php echo site_url('clima/capturas')?>">Capturas</a></li>
+		<li class="button"><a href="<?php echo site_url('clima/pronosticos')?>">Pronósticos </a></li>
 		<li class="button"><a href="<?php echo site_url('clima/usuarios')?>">Usuarios </a></li>
 		<li class="button last"><a href="<?php echo site_url('clima/logout')?>">Salir</a></li>
 	</ul>
-	<div>
+	<div class="grosery-crud-container">
 		<?php echo $output; ?>
 	</div>
 	<section class="about">

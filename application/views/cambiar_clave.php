@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Datos de clima - Iniciar sesión</title>
+  <title>Datos de clima - Cambiar clave</title>
   <link rel="shortcut icon" href="<?php echo site_url('images/favicon.ico')?>" />
   <link rel="stylesheet" href="<?php echo site_url('css/login.css')?>">
   <link rel="stylesheet" href="<?php echo site_url('css/style.css')?>">
@@ -14,25 +14,20 @@
 <body>
   <section class="container-login">
     <div class="login">
-      <h1>Iniciar sesión</h1>
-      <form method="post" action="<?php echo site_url('clima/login')?>">
-        <p><input type="email" name="identity" value="<?php echo set_value('identity')?>" required=required" placeholder="E-mail"></p>
-        <p><input type="password" name="password" value="" required=required" placeholder="Contraseña"></p>
-        <p class="remember_me">
-          <label>
-            <input type="checkbox" name="remember" id="remember_me">
-            Recordarme
-          </label>
-        </p>
-        <p class="submit"><input type="submit" name="commit" value="Ingresar"></p>
+      <h1>Cambiar clave</h1>
+      <form method="post" action="<?php echo site_url('clima/cambiar_clave').'/'.$code?>">
+	<input type="hidden" name="<?php echo array_keys($csrf)[0]?>" value="<?php echo array_values($csrf)[0]?>">
+	<input type="hidden" name="user_id" value="<?php echo $user_id?>">
+
+        <p><input type="password" name="pass" value="" required="required" placeholder="Nueva contraseña"></p>
+        <p><input type="password" name="pass2" value="" required="required" placeholder="Repetir contraseña"></p>
+
+	<div class="captcha"></div>
+        <p class="submit"><input type="submit" name="commit" value="Enviar"></p>
       </form>
       <?php if (strlen($message)>0): ?>
         <div class="login-msg"><?php echo $message?></div>
       <?php endif?>
-    </div>
-
-    <div class="login-help">
-      <p>¿Olvidaste la contraseña? <a href="<?php echo site_url('clima/recuperar_clave')?>">Click aquí para recuperarla</a>.</p>
     </div>
   </section>
 

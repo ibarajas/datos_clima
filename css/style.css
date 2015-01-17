@@ -3,6 +3,7 @@ body {
   color: #404040;
   background: #335380;
   color: white;
+  min-width: 768px;
 }
 .about p{
   text-align: center;
@@ -12,4 +13,7 @@ body {
   color: #cce7fa;
   text-decoration: none;
 }
-
+.grosery-crud-container{
+  clear: both;
+  background: white;
+}
