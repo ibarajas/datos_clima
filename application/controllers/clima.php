@@ -124,8 +124,12 @@ class Clima extends CI_Controller {
 		     ->display_as('meanwdird','Dirección del Viento Med. [km/h]')
 		     ->display_as('precipm','Lluvia caída [mm]')
 		     ->display_as('heatingdegreedays','Índice de calor [°C]');
+		$crud->order_by('dates','desc');
 
-		$this->load->view('clima.php',$crud->render());
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'resumenes',
+		));
 	}
 
 	public function estaciones(){
@@ -139,15 +143,19 @@ class Clima extends CI_Controller {
     		$crud->unset_edit();
 		$crud->unset_delete();
 
-		$crud->columns('wmo','city','location','lon','lat');
+		$crud->columns('city','location','wmo','lon','lat');
 		$crud->display_as('idStation','ID')
 		     ->display_as('city','Ciudad')
 		     ->display_as('location','Localidad')
 		     ->display_as('lon','Longitud')
 		     ->display_as('lat','Latitud')
 		     ->display_as('wmo','Identificador WU');
-		
-		$this->load->view('clima.php',$crud->render());
+		$crud->order_by('city','asc');
+
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'estaciones',
+		));
 	}
 
 	public function muestras(){
@@ -174,8 +182,12 @@ class Clima extends CI_Controller {
 		     ->display_as('wdird','Dirección del viento [grados]')
 		     ->display_as('pressurem','Presión atmosférica [mBar]')
 		     ->display_as('precimp','Precipitación [mm]');
-		
-		$this->load->view('clima.php',$crud->render());
+		$crud->order_by('dates','desc');
+
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'muestras',
+		));
 	}
 
 	public function capturas(){
@@ -194,8 +206,12 @@ class Clima extends CI_Controller {
 		$crud->display_as('idCapture','ID')
 		     ->display_as('idStation','Estación')
 		     ->display_as('dates','Fecha');
-		     			
-		$this->load->view('clima.php',$crud->render());
+		$crud->order_by('dates','desc');
+
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'capturas',
+		));
 	}
 
 	public function pronosticos(){
@@ -224,8 +240,12 @@ class Clima extends CI_Controller {
 		     ->display_as('feelslike','Feelslike')
 		     ->display_as('mslp','Mslp')
 		     ->display_as('pop','Probabilidad de precipitación');
-		
-		$this->load->view('clima.php',$crud->render());
+		$crud->order_by('dates','desc');
+
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'pronosticos',
+		));
 	}
 
 	public function usuarios(){
@@ -264,6 +284,7 @@ class Clima extends CI_Controller {
 		$crud->set_rules('pass', $this->lang->line('edit_user_validation_password_label'), 'max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[pass2]');
 
 		$crud->columns('username','email','created_on','active');
+		$crud->order_by('username','asc');
 		$crud->display_as('username','Nombre de usuario')
 		     ->display_as('email','Correo electrónico')
 		     ->display_as('createon','Fecha de alta')
@@ -272,7 +293,10 @@ class Clima extends CI_Controller {
 		     ->display_as('active','Estado')
 		     ->display_as('groups','Grupos');
 
-		$this->load->view('clima.php',$crud->render());
+		$this->load->view('clima.php',array(
+			'gc' => $crud->render(),
+			'page' => 'usuarios',
+		));
 	}
 
 	public function _callback_date($value, $row){
