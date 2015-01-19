@@ -1,0 +1,26 @@
+
+http://www.freehostingnoads.net -> http://http://vajimenez.t15.org/
+===================================================================
+FTP host	vajimenez.t15.org
+FTP IP	31.170.167.213
+FTP Port	21
+FTP username	u859151306
+
+
+http://www.1FreeHosting.com -> http://vajimenez.hostingsiteforfree.com
+======================================================================
+FTP host	vajimenez.hostingsiteforfree.com
+FTP IP		31.170.166.126
+FTP Port	21
+FTP username	u105124561
+
+
+000webhost.com --> http://ajimenez.site90.net (No deja importar base de datos)
+==============================================================================
+Control panel username	mipc_15755640
+Control panel URL	cpanel.mipropia.com
+MySQL username		mipc_15755640
+MySQL hostname		sql304.mipropia.com
+FTP username		mipc_15755640
+FTP host name 		ftp.mipropia.com
+
