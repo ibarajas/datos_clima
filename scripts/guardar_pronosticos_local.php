@@ -12,30 +12,4 @@ $db_params = array(
 	'pass' => "123456",
 	'name' => "clima_wu",
 );
-
-$db = conectarMySQL($db_params);
-$intentos = 100;
-while ($intentos > 0){
-	// pedir datos del dia
-	$parsed_json = prediccion10DiasHorario($key_ID, $coord);
-	sleep( 6.5 ); // LIMITACION POR USO GRATUITO
-	if ($parsed_json){
-		$idCapture = insertarCaptura($db, $est);
-		if ($idCapture){
-			$intentos = -1; //para terminar bucle
-			foreach($parsed_json['hourly_forecast'] as $obs){
-				$res = insertarForecast($db, $est, $obs, $idCapture);
-			}
-			break;
-		}
-		else{ // quito un intento y espero para el proximo
-			$intentos--;
-		}
-	}
-	else{ // quito un intento y espero para el proximo
-		$intentos--;
-	}
-	echo intentos."<br/>";
-}
-cerrarMySQL($db);
-
+guardar_pronosticos($db_params, $key_ID, $coord, $est);

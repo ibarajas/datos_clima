@@ -6,21 +6,25 @@ FTP IP	31.170.167.213
 FTP Port	21
 FTP username	u859151306
 
+ISSUES: el cron ejecuta dos veces los scripts
+solucion: checkear la base de datos antes de guardar
+CRON Programado a las XX:20 hs
+Comienza a partir del 26 de enero de 2015 a las 12:00hs
 
-http://www.1FreeHosting.com -> http://vajimenez.hostingsiteforfree.com
-======================================================================
-FTP host	vajimenez.hostingsiteforfree.com
-FTP IP		31.170.166.126
-FTP Port	21
-FTP username	u105124561
-
+http://cpanel.freehostingnoads.net
 
 000webhost.com --> http://ajimenez.site90.net (No deja importar base de datos)
 ==============================================================================
-Control panel username	mipc_15755640
-Control panel URL	cpanel.mipropia.com
-MySQL username		mipc_15755640
-MySQL hostname		sql304.mipropia.com
+MySQL username		a4332780_clima
+MySQL database		a4332780_clima
+MySQL hostname		mysql3.000webhost.com
 FTP username		mipc_15755640
 FTP host name 		ftp.mipropia.com
+
+ISSUES: no deja cargar base de datos > 2MB
+solucion: capturar datos cada 3 meses.
+CRON Programado a las XX:30 hs
+Comienza a partir del 26 de enero de 2015 a las 12:00hs
+
+http://members.000webhost.com/cpanel.php
 
